@@ -1,0 +1,61 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Customer Search - Flask App{% endblock %}
+
+{% block content %}
+
+<form>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Customer Name</label>
+        <select class="form-select" aria-label="Default select example">
+            <option selected>Select Customer</option>
+            <option value="1">Siva</option>
+            <option value="2">Raj</option>
+            <option value="3">M</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <section class="container">
+            <form class="row">
+              <label for="date" class="form-label">Date</label>
+              <div class="col-5">
+                <div class="input-group date" id="datepicker">
+                  <input type="text" class="form-control" id="date"/>
+                  <span class="input-group-append">
+                    <span class="input-group-text bg-light d-block">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </form>
+          </section>
+    </div>
+</form>
+<div class="container mt-5">
+    <h2>Customer List</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Family Name</th>
+                <th>Email Address</th>
+                <th>Phone Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.first_name}}</td>
+                <td>{{ item.family_name}}</td>
+                <td>{{ item.email}}</td>
+                <td>{{ item.phonenumber}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

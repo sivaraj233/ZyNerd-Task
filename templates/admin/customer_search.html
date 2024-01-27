@@ -1,0 +1,40 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Customer Search - Flask App{% endblock %}
+
+{% block content %}
+
+<form>
+    <div class="mb-3">
+      <label for="exampleInputEmail1" class="form-label">Search Name</label>
+      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+<div class="container mt-5">
+    <h2>Customer List</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Family Name</th>
+                <th>Email Address</th>
+                <th>Phone Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.first_name}}</td>
+                <td>{{ item.family_name}}</td>
+                <td>{{ item.email}}</td>
+                <td>{{ item.phonenumber}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

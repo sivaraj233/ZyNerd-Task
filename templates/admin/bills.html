@@ -1,0 +1,32 @@
+{% extends 'dashboard.html' %}
+
+{% block title %} Bills {% endblock %}
+
+{% block content %}
+
+
+<div class="container mt-5">
+    <h2>Customer List</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Jobs</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in bills %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.first_name}}</td>
+                <td>{{ item.jobs}}</td>
+                <td>{{ item.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
