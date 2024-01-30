@@ -1,10 +1,72 @@
-{% extends 'dashboard.html' %}
+{% include "base.html" %}
+<div class="wrapper">
+  {% include "topbar.html" %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    {% block content %}
 
-{% block title %}Customer Jobs{% endblock %}
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="card">
+            <div class="card-header border-transparent">
+              <h3 class="card-title">Current Jobs</h3>
 
-{% block content %}
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="remove"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table m-0">
+                  <thead>
+                    <tr>
+                      <th>Job ID</th>
+                      <th>Customer Name</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in data %}
+                    <tr>
+                      <td>
+                        <a
+                          href="{{ url_for('technicians_job', id=item.job_id) }}"
+                          >{{item.job_id}}</a
+                        >
+                      </td>
+                      <td>{{item.first_name}}</td>
+                      <td>
+                        {% if item['completed'] == 0 %}
+                        <span class="badge badge-warning">Incomplete</span>
+                      </td>
 
-<h2>Customer Jobs</h2>
-<p>This is the Customer Jobs.</p>
-
+                      {% endif %}
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.table-responsive -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
 {% endblock %}

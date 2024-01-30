@@ -1,0 +1,9 @@
+<div class="wrapper" >
+{% extends "base.html" %}
+
+  {% include "topbar.html" %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    {% include "sidebar.html" %}
+  </main>
+  <div class="content-wrapper">{% block content %} {% endblock %}</div>
+</div>

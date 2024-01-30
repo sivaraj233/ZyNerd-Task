@@ -1,13 +1,52 @@
-<nav class="col-md-2 d-none d-md-block bg-light sidebar">
-    <div class="sidebar-sticky">
-        <ul class="nav flex-column">
-            {% for item in menu_data %}
-            <li class="nav-item">
-                <a class="nav-link active" href="{{url_for(item.url)}}">
-                    {{item.menuname}}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
+
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        <div class="col-auto col-md-2 col-xl-2 px-sm-2 px-0 bg-dark">
+            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="{{url_for('admin_customer_list')}}" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Customer List</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('admin_customer_search')}}" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Customer Search</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('admin_add_customer')}}" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Add Customer</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('admin_add_service')}}" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Add Service</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('admin_add_part')}}" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Add Part</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('admin_schedule_jobs')}}" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Schedule Job</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('admin_bills')}}" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">UnPaid Bill</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Billing History</span>
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+            </div>
+        </div>
     </div>
-</nav>
+</div>

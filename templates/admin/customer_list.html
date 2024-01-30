@@ -1,32 +1,41 @@
-{% extends 'dashboard.html' %}
-
-{% block title %}Customer list{% endblock %}
-
-{% block content %}
-<div class="container mt-5">
-    <h2>Customer List</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Family Name</th>
-                <th>Email Address</th>
-                <th>Phone Number</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in data %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ item.first_name}}</td>
-                <td>{{ item.family_name}}</td>
-                <td>{{ item.email}}</td>
-                <td>{{ item.phonenumber}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends "admin/admin_index.html" %} {% block content %}
+<div class="content-wrapper" style="margin-top:-600px">
+    <section class="content">
+        <div class="col-lg-11">
+          <div class="card">
+            <div class="card-header border-0 text-center">
+              <h3 class="card-title">Customer List</h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                {{data}}
+                <table class="table m-0">
+                  <thead>
+                    <tr>
+                      <th>S.NO</th>
+                      <th>First Name</th>
+                      <th>Family Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in customer_details %}
+                    <tr>
+                      <td>{{ loop.index }}</td>
+                      <td>{{item.first_name}}</td>
+                      <td>{{item.family_name}}</td>
+                      <td>{{item.email}}</td>
+                      <td>{{item.phone}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 </div>
 
 {% endblock %}

@@ -1,21 +1,116 @@
-{% extends 'dashboard.html' %}
-
-{% block title %}Add Part{% endblock %}
-
-{% block content %}
-
-<h2>Add Part</h2>
-<form>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">name</label>
-        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+{% extends "admin/admin_index.html" %} {% block content %}
+<div class="content-wrapper" style="margin-top: -600px">
+  <section class="content">
+    <div class="card card-warning">
+      <div class="card-header">
+        <h3 class="card-title">Add Part</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <form>
+          <div class="row">
+            <div class="col-sm-6">
+              <!-- text input -->
+              <div class="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="part_name"
+                  placeholder="Enter Part Name"
+                />
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Cost</label>
+                <input
+                  type="text"
+                  id="cost"
+                  class="form-control"
+                  placeholder="Enter Amount"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-12">
+              <!-- text input -->
+              <div class="form-group">
+                <button type="button" class="btn btn-block btn-success btn-xs" onclick="addPart()">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- /.card-body -->
     </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">cost</label>
-        <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+  </section>
+</div>
+<script>
+  function addPart() {
+    // Get values from the form
+    var part_name = $("#part_name").val();
+    var cost = $("#cost").val();
+    // Create an object with the data
+    var data = {
+        part_name: part_name,
+        cost: cost,
+    };
+    console.log(data)
+    // Send an AJAX request to your Flask route
+    jQuery.ajax({
+      type: "POST",
+      url: "/add_master_part", // Update with your actual route
+      contentType: "application/json;charset=UTF-8",
+      data: JSON.stringify(data),
+      success: function (response) {
+        var modal = $("#successModal");
+        modal.find("#successModalLabel").text(response.data);
+        modal.modal("show");
+        modal.on("hidden.bs.modal", function () {
+          location.reload();
+        });
+      },
+      error: function (error) {
+        console.error(error);
+      },
+    });
+  }
+</script>
+<div
+  class="modal fade"
+  id="successModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="successModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel"></h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3 id="modalMessage"></h3>
+        <p id="modalDetails"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-
-
+  </div>
+</div>
 {% endblock %}

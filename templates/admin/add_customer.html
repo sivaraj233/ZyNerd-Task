@@ -1,28 +1,149 @@
-{% extends 'dashboard.html' %}
-{% block content %}
-<h2>Add Customer</h2>
-<form>
-    <div class="mb-3">
-      <label for="exampleInputEmail1" class="form-label">First name</label>
-      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+{% extends "admin/admin_index.html" %} {% block content %}
+<div class="content-wrapper" style="margin-top: -600px">
+  <section class="content">
+    <div class="card card-warning">
+      <div class="card-header">
+        <h3 class="card-title">Add Customer</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <form>
+          <div class="row">
+            <div class="col-sm-6">
+              <!-- text input -->
+              <div class="form-group">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="first_name"
+                  placeholder="Enter First Name"
+                />
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Family Name</label>
+                <input
+                  type="text"
+                  id="family_name"
+                  class="form-control"
+                  placeholder="Enter family Name"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <!-- text input -->
+              <div class="form-group">
+                <label>Email Address</label>
+                <input
+                  type="text"
+                  id="email"
+                  class="form-control"
+                  placeholder="Enter First Name"
+                />
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="phone"
+                  placeholder="Enter family Name"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-12">
+              <!-- text input -->
+              <div class="form-group">
+                <button type="button" class="btn btn-block btn-success btn-xs" onclick="addCustomer()">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- /.card-body -->
     </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">SurName</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Phone Number</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-      </div>
-    <div class="mb-3 form-check">
-      <input type="checkbox" class="form-check-input" id="exampleCheck1">
-      <label class="form-check-label" for="exampleCheck1">Check me out</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+  </section>
+</div>
+<script>
+  function addCustomer() {
+    // Get values from the form
+    var first_name = $("#first_name").val();
+    var family_name = $("#family_name").val();
+    var email = $("#email").val();
+    var phone = $("#phone").val();
 
+    // Create an object with the data
+    var data = {
+      first_name: first_name,
+      family_name: family_name,
+      email: email,
+      phone: phone,
+    };
+    console.log(data)
+    // Send an AJAX request to your Flask route
+    jQuery.ajax({
+      type: "POST",
+      url: "/add_customer", // Update with your actual route
+      contentType: "application/json;charset=UTF-8",
+      data: JSON.stringify(data),
+      success: function (response) {
+        var modal = $("#successModal");
+        modal.find("#successModalLabel").text(response.data);
+         
+        var  msg = response.isExist ? data.email + ' Already Exist': data.email+ ' Customer Addedd';
+        modal.find("#modalDetails").text(msg);
+        modal.modal("show");
+        modal.on("hidden.bs.modal", function () {
+          location.reload();
+        });
+      },
+      error: function (error) {
+        console.error(error);
+      },
+    });
+  }
+</script>
+<div
+  class="modal fade"
+  id="successModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="successModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel"></h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3 id="modalMessage"></h3>
+        <p id="modalDetails"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

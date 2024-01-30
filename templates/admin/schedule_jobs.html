@@ -1,61 +1,88 @@
-{% extends 'dashboard.html' %}
-
-{% block title %}Customer Search - Flask App{% endblock %}
-
-{% block content %}
-
-<form>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Customer Name</label>
-        <select class="form-select" aria-label="Default select example">
-            <option selected>Select Customer</option>
-            <option value="1">Siva</option>
-            <option value="2">Raj</option>
-            <option value="3">M</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <section class="container">
-            <form class="row">
-              <label for="date" class="form-label">Date</label>
-              <div class="col-5">
-                <div class="input-group date" id="datepicker">
-                  <input type="text" class="form-control" id="date"/>
-                  <span class="input-group-append">
-                    <span class="input-group-text bg-light d-block">
-                      <i class="fa fa-calendar"></i>
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </form>
-          </section>
-    </div>
-</form>
-<div class="container mt-5">
-    <h2>Customer List</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Family Name</th>
-                <th>Email Address</th>
-                <th>Phone Number</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in data %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ item.first_name}}</td>
-                <td>{{ item.family_name}}</td>
-                <td>{{ item.email}}</td>
-                <td>{{ item.phonenumber}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends "admin/admin_index.html" %} {% block content %}
+<div class="content-wrapper" style="margin-top: -600px">
+  <div class="container mt-5">
+    <h2>Job Booking</h2>
+    <form>
+        <div class="mb-3">
+            <label for="customerSelect" class="form-label">Select Customer:</label>
+            <select class="form-select" id="customerSelect" required name="customer">
+              {% for item in customer_list %}
+                <option value="{{item.customer_id}}">{{item.first_name}}</option>
+              {% endfor %}
+                <!-- Populate this dropdown with customer options -->
+                <!-- Add more options as needed -->
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="bookingDate" class="form-label">Booking Date:</label>
+            <input type="date" class="form-control" id="bookingDate" name="booking_date" required min="{{ today }}">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="addBookjob()">Book Job</button>
+    </form>
+  </div>
 </div>
-
+<script>
+  function addBookjob() {
+    // Get values from the form
+    var customerSelect = $("#customerSelect").val();
+    var bookingDate = $("#bookingDate").val();
+    // Create an object with the data
+    var data = {
+        customerSelect: customerSelect,
+        bookingDate: bookingDate,
+    };
+    console.log(data)
+    // Send an AJAX request to your Flask route
+    jQuery.ajax({
+      type: "POST",
+      url: "/book_job", // Update with your actual route
+      contentType: "application/json;charset=UTF-8",
+      data: JSON.stringify(data),
+      success: function (response) {
+        var modal = $("#successModal");
+        modal.find("#successModalLabel").text(response.data);
+        modal.modal("show");
+        modal.on("hidden.bs.modal", function () {
+          location.reload();
+        });
+      },
+      error: function (error) {
+        console.error(error);
+      },
+    });
+  }
+</script>
+<div
+  class="modal fade"
+  id="successModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="successModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel"></h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3 id="modalMessage"></h3>
+        <p id="modalDetails"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

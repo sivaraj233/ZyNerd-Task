@@ -1,10 +1,295 @@
-{% extends 'dashboard.html' %}
+{% extends "base.html" %} {% block content %}
+<!-- /.card-header -->
+<div class="wrapper">
+  {% include "topbar.html" %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <div class="row">
+      <!-- Job Information Section -->
+      <div class="col-lg-12">
+        <div class="card-body">
+          <h5 class="card-title">Job Information</h5>
+          <!-- Display job details here -->
+          <p>Customer: {{customer_details[0].first_name}}</p>
+          <p>Status: In Progress</p>
+          <button
+            type="button"
+            class="btn btn-success"
+            onclick="markAsComplted()"
+          >
+            Mark as Completed
+          </button>
+          <input
+            type="number"
+            class="form-control"
+            id="job_id"
+            hidden="true"
+            value="{{job_id}}"
+          />
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header border-0 text-center">
+            <h3 class="card-title">Parts</h3>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              {{data}}
+              <table class="table m-0">
+                <thead>
+                  <tr>
+                    <th>Job ID</th>
+                    <th>Part Name</th>
+                    <th>Qty</th>
+                    <th>Cost</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in part_details %}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{item.part_name}}</td>
+                    <td>{{item.qty}}</td>
+                    <td>&#8377;{{item.cost |string}}</td>
+                    <td>{{item.qty * item.cost}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header border-0 text-center">
+            <h3 class="card-title">Service</h3>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table m-0">
+                <thead>
+                  <tr>
+                    <th>Job ID</th>
+                    <th>Service Name</th>
+                    <th>Qty</th>
+                    <th>Cost</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in job_details %}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{item.service_name}}</td>
+                    <td>{{item.qty}}</td>
+                    <td>&#8377;{{item.cost |string}}</td>
+                    <td>{{item.qty * item.cost}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Parts Section -->
+      <div class="col-lg-6">
+        <div class="card-body">
+          <h5 class="card-title">Parts</h5>
+          <!-- Display existing parts and allow adding new ones -->
+          <!-- Form to add parts -->
+          <form>
+            <label for="partSelect">Select Part:</label>
+            <select class="form-select" id="partSelect">
+              {% for item in job_part %}
+              <option value="{{item.part_id}}">{{item.part_name}}</option>
+              {% endfor %}
+              <!-- Add more options as needed -->
+            </select>
 
-{% block title %}Jobs{% endblock %}
+            <label for="partQuantity">Quantity:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="partQuantity"
+              placeholder="Enter quantity"
+            />
 
-{% block content %}
+            <button
+              type="button"
+              class="btn btn-primary mt-2"
+              onclick="addPart()"
+            >
+              Add Part
+            </button>
+          </form>
+        </div>
+      </div>
 
-<h2>Jobs</h2>
-<p>This is the Jobs.</p>
+      <!-- Services Section -->
+      <div class="col-lg-6">
+        <div class="card-body">
+          <h5 class="card-title">Services</h5>
+          <!-- Display existing services and allow adding new ones -->
+          <!-- Form to add services -->
+          <form>
+            <label for="serviceSelect">Select Service:</label>
+            <select class="form-select" id="serviceSelect">
+              {% for item in job_service %}
+              <option value="{{item.service_id}}">{{item.service_name}}</option>
+              {% endfor %}
+            </select>
+            <label for="serviceQuantity">Quantity:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="serviceQuantity"
+              placeholder="Enter quantity"
+            />
+            <button
+              type="button"
+              class="btn btn-primary mt-2"
+              onclick="addService()"
+            >
+              Add Service
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+  function addPart() {
+    // Get values from the form
+    var partId = $("#partSelect").val();
+    var quantity = $("#partQuantity").val();
+    var job_id = $("#job_id").val();
+    console.log("testing");
 
+    // Create an object with the data
+    var data = {
+      job_id: job_id,
+      part_id: partId,
+      qty: quantity,
+    };
+    console.log(data);
+    // Send an AJAX request to your Flask route
+    jQuery.ajax({
+      type: "POST",
+      url: "/add_part", // Update with your actual route
+      contentType: "application/json;charset=UTF-8",
+      data: JSON.stringify(data),
+      success: function (response) {
+        var modal = $("#successModal");
+        modal.find("#modalMessage").text("Part Added");
+        modal.modal("show");
+        modal.on("hidden.bs.modal", function () {
+          location.reload();
+        });
+      },
+      error: function (error) {
+        console.error(error);
+      },
+    });
+  }
+</script>
+
+<script>
+  function addService() {
+    // Get values from the form
+    var serviceID = $("#serviceSelect").val();
+    var quantity = $("#serviceQuantity").val();
+    var job_id = $("#job_id").val();
+    // Create an object with the data
+    var data = {
+      job_id: job_id,
+      service_id: serviceID,
+      qty: quantity,
+    };
+    console.log(data);
+    // Send an AJAX request to your Flask route
+    jQuery.ajax({
+      type: "POST",
+      url: "/add_service", // Update with your actual route
+      contentType: "application/json;charset=UTF-8",
+      data: JSON.stringify(data),
+      success: function (response) {
+        var modal = $("#successModal");
+        modal.find("#modalMessage").text("Service Added");
+        modal.modal("show");
+        modal.on("hidden.bs.modal", function () {
+          location.reload();
+        });
+      },
+      error: function (error) {
+        console.error(error);
+      },
+    });
+  }
+
+  function markAsComplted() {
+    // Get values from the form
+    var job_id = $("#job_id").val();
+    // Create an object with the data
+    var data = {
+      job_id: job_id,
+    };
+    console.log(data);
+    // Send an AJAX request to your Flask route
+    jQuery.ajax({
+      type: "POST",
+      url: "/completed", // Update with your actual route
+      contentType: "application/json;charset=UTF-8",
+      data: JSON.stringify(data),
+      success: function (response) {
+        var modal = $("#successModal");
+        modal.find("#modalMessage").text("Job Was Completed");
+        modal.modal("show");
+        modal.on("hidden.bs.modal", function () {
+          window.location.href = "/";
+        });
+      },
+      error: function (error) {
+        console.error(error);
+      },
+    });
+  }
+</script>
+<!-- Bootstrap Modal -->
+<div
+  class="modal fade"
+  id="successModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="successModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Insertion Successful</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="modalMessage"></p>
+        <p id="modalDetails"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

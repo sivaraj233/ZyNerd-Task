@@ -1,40 +1,97 @@
-{% extends 'dashboard.html' %}
-
-{% block title %}Customer Search - Flask App{% endblock %}
-
-{% block content %}
-
-<form>
-    <div class="mb-3">
-      <label for="exampleInputEmail1" class="form-label">Search Name</label>
-      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+{% extends "admin/admin_index.html" %} {% block content %}
+<div class="content-wrapper" style="margin-top: -600px">
+  <h1>Customer Search</h1>
+  <form method="post">
+    <label for="search_term">Search:</label>
+    <input
+      type="text"
+      id="search_term"
+      name="search_term"
+      required
+      oninput="searchTerm()"
+    />
   </form>
-<div class="container mt-5">
-    <h2>Customer List</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Family Name</th>
-                <th>Email Address</th>
-                <th>Phone Number</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in data %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ item.first_name}}</td>
-                <td>{{ item.family_name}}</td>
-                <td>{{ item.email}}</td>
-                <td>{{ item.phonenumber}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <section class="content">
+    <div class="col-lg-11">
+      <div class="card">
+        <div class="card-header border-0 text-center">
+          <h3 class="card-title">Customer List</h3>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            {{data}}
+            <table class="table m-0" id="customerTable">
+              <thead>
+                <tr>
+                  <th>S.NO</th>
+                  <th>First Name</th>
+                  <th>Family Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in customer_details %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{item.first_name}}</td>
+                  <td>{{item.family_name}}</td>
+                  <td>{{item.email}}</td>
+                  <td>{{item.phone}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
+<script>
+  function searchTerm() {
+    var searchItem = $("#search_term").val();
+    var data = {
+      searchItem: searchItem,
+    };
+    // Send an AJAX request to your Flask route
+    jQuery.ajax({
+      type: "POST",
+      url: "/search_customers", // Update with your actual route
+      contentType: "application/json;charset=UTF-8",
+      data: JSON.stringify(data),
+      success: function (response) {
+        $("#customerTable tbody").empty();
+        // Update table with new data
+        for (var i = 0; i < response.data.length; i++) {
+          var item = response.data[i];
+          var newRow =
+            "<tr>" +
+            "<td>" +
+            (i + 1) +
+            "</td>" +
+            "<td>" +
+            item.first_name +
+            "</td>" +
+            "<td>" +
+            item.family_name +
+            "</td>" +
+            "<td>" +
+            item.email +
+            "</td>" +
+            "<td>" +
+            item.phone +
+            "</td>" +
+            "</tr>";
 
+          // Append the new row to the table
+          $("#customerTable tbody").append(newRow);
+        }
+      },
+      error: function (error) {
+        console.error(error);
+      },
+    });
+  }
+</script>
 {% endblock %}
