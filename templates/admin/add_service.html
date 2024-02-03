@@ -1,5 +1,5 @@
 {% extends "admin/admin_index.html" %} {% block content %}
-<div class="content-wrapper" style="margin-top: -600px">
+<div class="content-wrapper">
   <section class="content">
     <div class="card card-warning">
       <div class="card-header">
@@ -7,7 +7,7 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body">
-        <form>
+        <form action="/add_master_service" method="post">
           <div class="row">
             <div class="col-sm-6">
               <!-- text input -->
@@ -16,6 +16,7 @@
                 <input
                   type="text"
                   class="form-control"
+                  name="service_name"
                   id="service_name"
                   placeholder="Enter Service Name"
                 />
@@ -27,6 +28,7 @@
                 <input
                   type="text"
                   id="cost"
+                  name="cost"
                   class="form-control"
                   placeholder="Enter Amount"
                 />
@@ -37,7 +39,7 @@
             <div class="col-sm-12">
               <!-- text input -->
               <div class="form-group">
-                <button type="button" class="btn btn-block btn-success btn-xs" onclick="addService()">
+                <button type="submit" class="btn btn-block btn-success btn-xs" >
                   Submit
                 </button>
               </div>
@@ -49,7 +51,7 @@
     </div>
   </section>
 </div>
-<script>
+<!-- <script>
   function addService() {
     // Get values from the form
     var part_name = $("#service_name").val();
@@ -112,5 +114,5 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 {% endblock %}

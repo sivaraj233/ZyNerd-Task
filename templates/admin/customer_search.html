@@ -1,14 +1,15 @@
 {% extends "admin/admin_index.html" %} {% block content %}
-<div class="content-wrapper" style="margin-top: -600px">
+<div class="content-wrapper" >
   <h1>Customer Search</h1>
-  <form method="post">
+  <form method="post" action="/search_customers">
     <label for="search_term">Search:</label>
     <input
       type="text"
       id="search_term"
       name="search_term"
       required
-      oninput="searchTerm()"
+      value="{{search_term}}"
+      oninput="this.form.submit()"
     />
   </form>
   <section class="content">
@@ -48,7 +49,17 @@
     </div>
   </section>
 </div>
+
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+      
+     var input =  document.getElementById('search_term')
+     console.log(input.value)
+     input.focus();
+      
+  });
+</script>
+<!-- <script>
   function searchTerm() {
     var searchItem = $("#search_term").val();
     var data = {
@@ -93,5 +104,5 @@
       },
     });
   }
-</script>
+</script> -->
 {% endblock %}

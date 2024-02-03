@@ -1,6 +1,8 @@
 import datetime
 from flask import Flask, jsonify, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
+from itertools import groupby
+from operator import itemgetter  # Import itemgetter
 
 
 app = Flask(__name__)
@@ -9,29 +11,12 @@ app.config["MYSQL_PASSWORD"] = "Null@123"
 app.config["MYSQL_DB"] = "spb"
 
 mysql = MySQL(app)
-#menu 
-def generate_menu(role):
-        technicians_menu = [
-        {'url': 'technicians_customer_job', 'menuname':'Current Jobs' },
-        {'url': 'technicians_job', 'menuname':'Jobs' }
-        ]
-        admin_menu = [
-            {'url': 'admin_customer_list', 'menuname':'Customer List' },
-            {'url': 'admin_customer_search', 'menuname':'Customer Search' }, 
-            {'url': 'admin_add_customer', 'menuname':'Add Customer' },
-            {'url': 'admin_add_service', 'menuname':'Add Service' },
-            {'url': 'admin_add_part', 'menuname':'Add Part' },
-            {'url': 'admin_schedule_jobs', 'menuname':'Schedule Jobs' },
-            {'url': 'admin_bills', 'menuname':'Unpaid & pay Bills' },
-            {'url': 'admin_history', 'menuname':'Billing History' },
-            ]
-        if(role == 'admin'):
-            menu = admin_menu
-        else:
-            menu = technicians_menu
-        return menu
-#login page
 @app.route("/")
+def index():
+    return render_template('index.html')
+
+#login page
+@app.route("/job")
 def home():
     cur = mysql.connection.cursor()
     cur.execute("""SELECT job.*, customer.first_name
@@ -93,10 +78,10 @@ def technicians_job(id):
 @app.route('/add_part', methods=['POST'])
 def add_part():
     try:
-        data = request.get_json()
-        job_id = data.get('job_id')
-        part_id = data.get('part_id')
-        qty = data.get('qty')
+        # data = request.get_json()
+        job_id = request.form.get('job_id')
+        part_id = request.form.get('part_id')
+        qty = request.form.get('qty')
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM job_part WHERE job_id = %s AND part_id = %s", (job_id, part_id))
         existing_record = cur.fetchone()
@@ -109,7 +94,7 @@ def add_part():
             cur.execute("INSERT INTO job_part (job_id, part_id, qty) VALUES (%s, %s, %s)", (job_id, part_id, qty))
 
         cur.connection.commit() 
-        return jsonify({"message": "Part added successfully"})
+        return redirect(url_for('technicians_job', id=job_id))
     except Exception as e:
         # Log the error and return an error response
         print(f"An error occurred: {str(e)}")
@@ -119,10 +104,9 @@ def add_part():
 def add_service():
     # Retrieve data from the request
     try:
-        data = request.get_json()
-        job_id = data.get('job_id')
-        service_id = data.get('service_id')
-        qty = data.get('qty')
+        job_id = request.form.get('job_id')
+        service_id = request.form.get('service_id')
+        qty = request.form.get('qty')
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM job_service WHERE job_id = %s AND service_id = %s", (job_id, service_id))
         existing_record = cur.fetchone()
@@ -135,7 +119,7 @@ def add_service():
             cur.execute("INSERT INTO job_service (job_id, service_id, qty) VALUES (%s, %s, %s)", (job_id, service_id, qty))
 
         cur.connection.commit() 
-        return jsonify({"message": "Service added successfully"})
+        return redirect(url_for('technicians_job', id=job_id))
     except Exception as e:
         # Log the error and return an error response
         print(f"An error occurred: {str(e)}")
@@ -144,10 +128,8 @@ def add_service():
 @app.route('/completed', methods=['POST'])
 def mark_completed():
     try:
-        data = request.get_json()
-        job_id = data.get('job_id')
+        job_id = request.form.get('job_id')
         cur = mysql.connection.cursor()
-
         # Calculate the total cost from job_part
         cur.execute("""
             SELECT IFNULL(SUM(part.cost * job_part.qty), 0) AS part_total
@@ -156,7 +138,6 @@ def mark_completed():
             WHERE job_part.job_id = %s
         """, (job_id,))
         part_total = cur.fetchone()[0]
-        print(part_total)
         # Calculate the total cost from job_service
         cur.execute("""
             SELECT IFNULL(SUM(service.cost * job_service.qty), 0) AS service_total
@@ -165,20 +146,18 @@ def mark_completed():
             WHERE job_service.job_id = %s
         """, (job_id,))
         service_total = cur.fetchone()[0]
-        print(service_total)
 
         # Calculate the overall total cost
         total_cost = part_total + service_total
-        print(total_cost)
         # Update the total cost in the job table
         cur.execute("UPDATE job SET total_cost = %s, completed=1 WHERE job_id = %s", (total_cost, job_id))
         mysql.connection.commit()
-        return jsonify({"message": "Service added successfully"})
+        return redirect('/')
     
     except Exception as e:
         # Log the error and return an error response
         print(f"An error occurred: {str(e)}")
-        return jsonify({"error": "Failed to add Service"}), 500
+        return jsonify({"error": "Failed to add complete"}), 500
 
 
 #admin page
@@ -207,8 +186,10 @@ def admin_customer_search():
     return render_template('admin/customer_search.html', customer_details=customer_list)
 @app.route('/search_customers',methods=['POST'])
 def search_customers():
-    data = request.get_json()
-    search_term = data.get('searchItem')
+            # Handle the case where search_term is None
+    search_term = request.form.get('search_term')
+    if search_term is None:
+        search_term = ''
     
     try:
         cur = mysql.connection.cursor()
@@ -224,12 +205,13 @@ def search_customers():
         # Fetch all the results
         columns = [column[0] for column in cur.description]
         results = [dict(zip(columns, row)) for row in cur.fetchall()]
-
+        print(results)
+        print(search_term)
         # Close the cursor
         cur.close()
 
         # Return a JSON response
-        return jsonify({"data": results})
+        return render_template('admin/customer_search.html', customer_details=results,search_term =search_term)
 
     except Exception as e:
         # Handle exceptions
@@ -243,13 +225,11 @@ def admin_add_customer():
 
 @app.route('/add_customer', methods=['POST'])
 def add_customer():
-    data = request.get_json()
     try:
-        data = request.get_json()
-        first_name = data.get('first_name')
-        family_name = data.get('family_name')
-        email = data.get('email')
-        phonenumber = data.get('phone')
+        first_name = request.form.get('first_name')
+        family_name = request.form.get('family_name')
+        email = request.form.get('email')
+        phonenumber = request.form.get('phone')
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM customer WHERE email = %s AND phone = %s", (email, phonenumber))
         existing_record = cur.fetchone()
@@ -263,7 +243,7 @@ def add_customer():
         cur.connection.commit() 
 
         # Return a JSON response
-        return jsonify({"data": "Insert Sucessfully", "isExist": False})
+        return render_template('admin/add_customer.html')
 
     except Exception as e:
         # Handle exceptions
@@ -275,11 +255,9 @@ def admin_add_part():
     return render_template('admin/add_part.html')
 @app.route('/add_master_part', methods=['POST'])
 def add_master_part():
-    data = request.get_json()
     try:
-        data = request.get_json()
-        part_name = data.get('part_name')
-        cost = data.get('cost')
+        part_name =request.form.get('part_name')
+        cost = request.form.get('cost')
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM part WHERE part_name = %s AND cost = %s", (part_name, cost))
         existing_record = cur.fetchone()
@@ -293,7 +271,7 @@ def add_master_part():
         cur.connection.commit() 
 
         # Return a JSON response
-        return jsonify({"data": "Insert Sucessfully", "isExist": False})
+        return render_template('admin/add_part.html')
 
     except Exception as e:
         # Handle exceptions
@@ -307,11 +285,9 @@ def admin_add_service():
 
 @app.route('/add_master_service', methods=['POST'])
 def add_master_service():
-    data = request.get_json()
     try:
-        data = request.get_json()
-        service_name = data.get('service_name')
-        cost = data.get('cost')
+        service_name =request.form.get('service_name')
+        cost = request.form.get('cost')
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM service WHERE service_name = %s AND cost = %s", (service_name, cost))
         existing_record = cur.fetchone()
@@ -325,7 +301,7 @@ def add_master_service():
         cur.connection.commit() 
 
         # Return a JSON response
-        return jsonify({"data": "Insert Sucessfully", "isExist": False})
+        return render_template('admin/add_service.html')
 
     except Exception as e:
         # Handle exceptions
@@ -346,13 +322,16 @@ def admin_schedule_jobs():
 @app.route('/book_job', methods=['POST'])
 def book_job():
     try:
-        data = request.get_json()
-        customerSelect = data.get('customerSelect')
-        bookingDate = data.get('bookingDate')
+        today = datetime.date.today().strftime('%Y-%m-%d')
+        customerSelect =request.form.get('customerSelect')
+        bookingDate = request.form.get('bookingDate')
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM job WHERE customer = %s AND job_date = %s", (customerSelect, bookingDate))
         existing_record = cur.fetchone()
-
+        cur.execute("""SELECT *
+            FROM customer ORDER BY family_name, first_name""")
+        columns = [column[0] for column in cur.description]
+        customer_list = [dict(zip(columns, row)) for row in cur.fetchall()]
         if existing_record:
             return jsonify({"data": "Already Exist", "isExist": True})
         else:
@@ -362,33 +341,52 @@ def book_job():
         cur.connection.commit() 
 
         # Return a JSON response
-        return jsonify({"data": "Insert Sucessfully", "isExist": False})
+        return render_template('admin/schedule_jobs.html', customer_list=customer_list, today=today)
 
     except Exception as e:
         # Handle exceptions
         print(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the search."})
 
-@app.route('/admin/bills')
+@app.route('/admin/bills', methods=['POST', 'GET'])
 def admin_bills():
     cur = mysql.connection.cursor()
-    cur.execute("""
-    SELECT job.job_id, job.job_date, customer.first_name, job.total_cost,customer_id
-    FROM job
-    JOIN customer ON job.customer = customer.customer_id
-    WHERE job.paid = 0;
-    """)
+    if request.method == 'GET' and request.args.get('customer') is not None :
+        print('GET Method')
+        customer_id = request.args.get('customer')
+        cur.execute(""" 
+            SELECT job.job_id, job.job_date, customer.first_name, job.total_cost,customer_id
+            FROM job
+            JOIN customer ON job.customer = customer.customer_id
+            WHERE job.paid = 0 and customer.customer_id=%s; """, (customer_id))
+        print(customer_id)
+        
+    else:
+        print('Post Method')
+        cur.execute("""
+        SELECT job.job_id, job.job_date, customer.first_name, job.total_cost,customer_id
+        FROM job
+        JOIN customer ON job.customer = customer.customer_id
+        WHERE job.paid = 0;
+        """)
     columns = [column[0] for column in cur.description]
     customer_list = [dict(zip(columns, row)) for row in cur.fetchall()]
+    cur.execute("""
+        SELECT customer.first_name, customer_id
+        FROM job
+        JOIN customer ON job.customer = customer.customer_id
+        WHERE job.paid = 0;
+        """)
+    columns = [column[0] for column in cur.description]
+    customer_name = [dict(zip(columns, row)) for row in cur.fetchall()]
     cur.close()
-    return render_template('admin/bills.html',customer_details=customer_list)
+    return render_template('admin/bills.html',customer_details=customer_list, customer_name=customer_name)
 
 @app.route('/paid', methods=['POST'])
 def mark_paid():
+    print(request.method)
     try:
-        data = request.get_json()
-        job_id = data.get('job_id')
-        print(job_id)
+        job_id = request.form.get('job_id')
         cur = mysql.connection.cursor()
         # Update the total cost in the job table
         cur.execute("UPDATE job SET paid=1 WHERE job_id = %s", (job_id,))
@@ -417,7 +415,6 @@ def search_customer():
         # Fetch all the results
         columns = [column[0] for column in cur.description]
         results = [dict(zip(columns, row)) for row in cur.fetchall()]
-        print(results)
         # Close the cursor
         cur.close()
 
@@ -430,6 +427,50 @@ def search_customer():
         return jsonify({"error": "An error occurred during the search."})
 
 
+@app.route('/unpaid_bills_report')
+def unpaid_bills_report():
+    try:
+        cur = mysql.connection.cursor()
+        query = """
+            SELECT
+                customer.customer_id,
+                customer.first_name,
+                customer.family_name,
+                job.job_date,
+                job.total_cost,
+                DATEDIFF(NOW(), job.job_date) AS days_since_job
+            FROM
+                customer
+            JOIN
+                job ON customer.customer_id = job.customer
+            WHERE
+                job.paid = 0
+            ORDER BY
+                customer.family_name,
+                customer.first_name,
+                days_since_job DESC;
+        """
+        cur.execute(query)
+        columns = [column[0] for column in cur.description]
+        results = [dict(zip(columns, row)) for row in cur.fetchall()]
+
+        if not results:
+            # Handle case when results is empty
+            return render_template('admin/history.html', results=[])
+
+        sorted_results = sorted(results, key=itemgetter('customer_id', 'job_date'))
+        print(sorted_results)
+        grouped_results = {key: list(group) for key, group in groupby(sorted_results, key=lambda x: x['customer_id'])}
+        print(grouped_results)
+
+        return render_template('admin/history.html', grouped_results=grouped_results)
+
+    except Exception as e:
+        # Handle exceptions
+        print(f"An error occurred: {str(e)}")
+        return render_template('admin/history.html', results=[])
+    finally:
+        cur.close()
 
 if __name__ == '__main__':
     app.run(debug=True)

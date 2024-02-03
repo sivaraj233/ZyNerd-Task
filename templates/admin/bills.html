@@ -1,54 +1,63 @@
 {% extends "admin/admin_index.html" %} {% block content %}
-<div class="content-wrapper" style="margin-top: -600px">
-    <div class="container mt-5">
-        <h1>Unpaid Bills</h1>
-        <form>
-            <div class="mb-3">
-                <label for="customerSelect" class="form-label">Select Customer:</label>
-                <select class="form-select" id="customerSelect" required name="customer">
-                    {% for item in customer_details %}
-                    <option value="{{item.customer_id}}">{{item.first_name}}</option>
-                    {% endfor %}
-                    <!-- Populate this dropdown with customer options -->
-                    <!-- Add more options as needed -->
-                </select>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="searchCustomer()">
-                Book Job
-            </button>
-        </form>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table m-0" id="customerTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Amount</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for bill in customer_details %}
-                        <tr>
-                            <td>{{ bill.job_date }}</td>
-                            <td>{{ bill.first_name }}</td>
-                            <td>{{ bill.total_cost }}</td>
-                            <td>
-                                <button type="button" class="btn btn-primary" onclick="paidBill('{{ bill.job_id}}')" >
-                                    Mark as Paid
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<div class="content-wrapper">
+  <div class="container mt-5">
+    <h1>Unpaid Bills</h1>
+    <form method="get" action="/admin/bills">
+      <div class="mb-3">
+        <label for="customerSelect" class="form-label">Select Customer:</label>
+        <select
+          class="form-select"
+          id="customerSelect"
+          required
+          name="customer"
+        >
+          {% for item in customer_name %}
+          <option value="{{item.customer_id}}">{{item.first_name}}</option>
+          {% endfor %}
+          <!-- Populate this dropdown with customer options -->
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Book Job</button>
+    </form>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table m-0" id="customerTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <form action="{{ url_for('mark_paid') }}" method="post">
+              {% for bill in customer_details %}
+              <input type="text" value={{ bill.job_id}} name="job_id" style="display: none;" />
+              <tr>
+                <td>{{ bill.job_date }}</td>
+                <td>{{ bill.first_name }}</td>
+                <td>{{ bill.total_cost }}</td>
+                <td>
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                  >
+                    Mark as Paid
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </form>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 </div>
 
-<script>
+<!-- <script>
     function paidBill(id) {
         // Get values from the form
         var job_id = id;
@@ -143,5 +152,5 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 {% endblock %}

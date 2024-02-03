@@ -1,5 +1,5 @@
 {% extends "admin/admin_index.html" %} {% block content %}
-<div class="content-wrapper" style="margin-top: -600px">
+<div class="content-wrapper" >
   <section class="content">
     <div class="card card-warning">
       <div class="card-header">
@@ -7,7 +7,7 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body">
-        <form>
+        <form action="/add_customer" method="post">
           <div class="row">
             <div class="col-sm-6">
               <!-- text input -->
@@ -16,7 +16,7 @@
                 <input
                   type="text"
                   class="form-control"
-                  id="first_name"
+                  name="first_name"
                   placeholder="Enter First Name"
                 />
               </div>
@@ -26,7 +26,7 @@
                 <label>Family Name</label>
                 <input
                   type="text"
-                  id="family_name"
+                  name="family_name"
                   class="form-control"
                   placeholder="Enter family Name"
                 />
@@ -40,7 +40,7 @@
                 <label>Email Address</label>
                 <input
                   type="text"
-                  id="email"
+                  name="email"
                   class="form-control"
                   placeholder="Enter First Name"
                 />
@@ -52,7 +52,7 @@
                 <input
                   type="text"
                   class="form-control"
-                  id="phone"
+                  name="phone"
                   placeholder="Enter family Name"
                 />
               </div>
@@ -62,7 +62,7 @@
             <div class="col-sm-12">
               <!-- text input -->
               <div class="form-group">
-                <button type="button" class="btn btn-block btn-success btn-xs" onclick="addCustomer()">
+                <button type="submit" class="btn btn-block btn-success btn-xs">
                   Submit
                 </button>
               </div>
@@ -74,7 +74,7 @@
     </div>
   </section>
 </div>
-<script>
+<!-- <script>
   function addCustomer() {
     // Get values from the form
     var first_name = $("#first_name").val();
@@ -145,5 +145,5 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 {% endblock %}

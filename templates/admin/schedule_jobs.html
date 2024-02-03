@@ -1,11 +1,11 @@
 {% extends "admin/admin_index.html" %} {% block content %}
-<div class="content-wrapper" style="margin-top: -600px">
+<div class="content-wrapper">
   <div class="container mt-5">
     <h2>Job Booking</h2>
-    <form>
+    <form method="post" action="/book_job">
         <div class="mb-3">
             <label for="customerSelect" class="form-label">Select Customer:</label>
-            <select class="form-select" id="customerSelect" required name="customer">
+            <select class="form-select" id="customerSelect" required name="customerSelect">
               {% for item in customer_list %}
                 <option value="{{item.customer_id}}">{{item.first_name}}</option>
               {% endfor %}
@@ -15,9 +15,9 @@
         </div>
         <div class="mb-3">
             <label for="bookingDate" class="form-label">Booking Date:</label>
-            <input type="date" class="form-control" id="bookingDate" name="booking_date" required min="{{ today }}">
+            <input type="date" class="form-control" id="bookingDate" name="bookingDate" required min="{{ today }}">
         </div>
-        <button type="button" class="btn btn-primary" onclick="addBookjob()">Book Job</button>
+        <button type="submit" class="btn btn-primary" >Book Job</button>
     </form>
   </div>
 </div>

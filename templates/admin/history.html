@@ -1,9 +1,34 @@
-{% extends 'dashboard.html' %}
-
-{% block title %} Bills {% endblock %}
-
+{% extends "admin/admin_index.html" %} 
 {% block content %}
+<div class="content-wrapper" >
+  <div class="container mt-5">
+    <h1>Unpaid Bills Report</h1>
 
-
-
+    {% for customer_id, customer_bills in grouped_results.items() %}
+        <h2>{{ customer_bills[0].family_name }}, {{ customer_bills[0].first_name }}</h2>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table m-0" id="customerTable">
+                    <thead>
+                        <tr>
+                            <th>Date of Job</th>
+                            <th>Total Cost</th>
+                            <th>Days Since Job</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in customer_bills %}
+                            <tr {% if bill.days_since_job > 14 %}class="unpaid"{% endif %}>
+                                <td>{{ bill.job_date }}</td>
+                                <td>{{ bill.total_cost }}</td>
+                                <td>{{ bill.days_since_job }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

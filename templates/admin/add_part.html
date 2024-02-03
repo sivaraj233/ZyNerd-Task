@@ -1,5 +1,5 @@
 {% extends "admin/admin_index.html" %} {% block content %}
-<div class="content-wrapper" style="margin-top: -600px">
+<div class="content-wrapper">
   <section class="content">
     <div class="card card-warning">
       <div class="card-header">
@@ -7,7 +7,7 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body">
-        <form>
+        <form action="/add_master_part" method="post">
           <div class="row">
             <div class="col-sm-6">
               <!-- text input -->
@@ -17,6 +17,7 @@
                   type="text"
                   class="form-control"
                   id="part_name"
+                  name="part_name"
                   placeholder="Enter Part Name"
                 />
               </div>
@@ -27,6 +28,7 @@
                 <input
                   type="text"
                   id="cost"
+                  name="cost"
                   class="form-control"
                   placeholder="Enter Amount"
                 />
@@ -37,7 +39,7 @@
             <div class="col-sm-12">
               <!-- text input -->
               <div class="form-group">
-                <button type="button" class="btn btn-block btn-success btn-xs" onclick="addPart()">
+                <button type="submit" class="btn btn-block btn-success btn-xs" >
                   Submit
                 </button>
               </div>
@@ -49,7 +51,7 @@
     </div>
   </section>
 </div>
-<script>
+<!-- <script>
   function addPart() {
     // Get values from the form
     var part_name = $("#part_name").val();
@@ -112,5 +114,5 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 {% endblock %}
