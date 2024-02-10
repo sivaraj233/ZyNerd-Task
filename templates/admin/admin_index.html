@@ -1,12 +1,80 @@
-<div class="wrapper" >
-{% extends "base.html" %}
+<div class="wrapper">
+  {% extends "base.html" %}
 
   {% include "topbar.html" %}
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
     {% include "sidebar.html" %}
   </main>
-  <div class="content-wrapper">
-    {% block content %} 
-    
-    {% endblock %}</div>
+  <div class="content-wrapper ">
+    {% block content %}
+    <div class="content-wrapper">
+      <section class="content">
+        <div class="container-fluid">
+          <!-- Info boxes -->
+          <div class="row">
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Total Customer</span>
+                  <span class="info-box-number">
+                    {{user_count[0]['count(*)']}}
+                  </span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fa fa-tasks"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Jobs Created Today</span>
+                  <span class="info-box-number">{{job_count[0]['count(*)']}}</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+  
+            <!-- fix for small devices only -->
+            <div class="clearfix hidden-md-up"></div>
+  
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fa fa-spinner"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Current Jobs</span>
+                  <span class="info-box-number"> {{incomplete_job[0]['count(*)']}}</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-warning elevation-1"><i class="fa fa-check"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text"> Jobs Completed Today </span>
+                  <span class="info-box-number"> {{complete_job[0]['count(*)']}}</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+  {% endblock %}
+</div>
 </div>

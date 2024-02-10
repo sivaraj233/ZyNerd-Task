@@ -49,7 +49,7 @@
                           >{{item.job_id}}</a
                         >
                       </td>
-                      <td>{{item.first_name}}</td>
+                      <td> {% if item['first_name'] == None %}   -   {% else %} {{item.first_name}} {% endif %} , {% if item['family_name'] == None %}   -   {% else %} {{item.family_name}} {% endif %}  </td>
                       <td>
                         {% if item['completed'] == 0 %}
                         <span class="badge badge-warning">Incomplete</span>
@@ -68,5 +68,35 @@
       </div>
     </section>
   </main>
+</div>
+<script>
+  $(document).ready(function() {
+    var successModalValue = "{{ success_modal }}";
+    console.log('Success modal value:', successModalValue);
+
+    if (successModalValue === "True") {
+      console.log('Showing modal');
+      $('#successModal').modal('show');
+    }
+  });
+</script>
+<!-- Modal for Success Message -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content bg-success">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Mark As Completed Successfully</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Job was completed
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

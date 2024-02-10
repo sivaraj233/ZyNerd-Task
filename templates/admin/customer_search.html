@@ -21,7 +21,7 @@
         <div class="card-body p-0">
           <div class="table-responsive">
             {{data}}
-            <table class="table m-0" id="customerTable">
+            <table class="table table-striped" id="customerTable">
               <thead>
                 <tr>
                   <th>S.NO</th>
@@ -35,8 +35,8 @@
                 {% for item in customer_details %}
                 <tr>
                   <td>{{ loop.index }}</td>
-                  <td>{{item.first_name}}</td>
-                  <td>{{item.family_name}}</td>
+                  <td>{% if item['first_name'] == None %}   -   {% else %} {{item.first_name}} {% endif %}    </td>
+                  <td>{% if item['family_name'] == None %}   -   {% else %} {{item.family_name}} {% endif %}</td>
                   <td>{{item.email}}</td>
                   <td>{{item.phone}}</td>
                 </tr>

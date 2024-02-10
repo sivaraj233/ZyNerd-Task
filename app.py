@@ -16,21 +16,23 @@ def index():
     return render_template('index.html')
 
 #login page
-@app.route("/job")
+@app.route("/currentjobs")
 def home():
+    success_modal = request.args.get('success_modal', False)
     cur = mysql.connection.cursor()
-    cur.execute("""SELECT job.*, customer.first_name
+    cur.execute("""SELECT job.*, customer.first_name, customer.family_name
         FROM job
         JOIN customer ON job.customer = customer.customer_id where completed=0""")
     columns = [column[0] for column in cur.description]
     rv = [dict(zip(columns, row)) for row in cur.fetchall()]
     cur.close()
-    return render_template('technicians/customer_jobs.html', data=rv)
+    return render_template('technicians/customer_jobs.html', data=rv, success_modal=success_modal)
 
 
 #technicians
 @app.route('/technicians/jobs/<id>')
 def technicians_job(id):
+    success_modal = request.args.get('success_modal', False)
     cur = mysql.connection.cursor()
     #get part
     cur.execute("""
@@ -41,7 +43,6 @@ def technicians_job(id):
     """, (id,))
     columns = [column[0] for column in cur.description]
     part_details = [dict(zip(columns, row)) for row in cur.fetchall()]
-
     #get service
     cur.execute("""
         SELECT job_service.*, service.service_id, service.service_name, service.cost
@@ -58,27 +59,25 @@ def technicians_job(id):
     """)
     columns = [column[0] for column in cur.description]
     job_part = [dict(zip(columns, row)) for row in cur.fetchall()]
-
     #get all service
     cur.execute("""
         SELECT * FROM service
     """)
     columns = [column[0] for column in cur.description]
     job_service = [dict(zip(columns, row)) for row in cur.fetchall()]
-
+    print("service job_service")
     #get customer Details
-    cur.execute("""SELECT job.*, customer.first_name
+    cur.execute("""SELECT job.*, customer.first_name, customer.family_name
         FROM job
-        JOIN customer ON job.customer = customer.customer_id where job_id=%s""", (id))
+        JOIN customer ON job.customer = customer.customer_id where job_id=%s""", (id,))
     columns = [column[0] for column in cur.description]
     customer_details = [dict(zip(columns, row)) for row in cur.fetchall()]
     cur.close()
-    return render_template('technicians/jobs.html', part_details=part_details,job_details=job_details, job_part=job_part, job_service=job_service, customer_details=customer_details, job_id=id)
+    return render_template('technicians/jobs.html', part_details=part_details,job_details=job_details, job_part=job_part, job_service=job_service, customer_details=customer_details, job_id=id,success_modal=success_modal)
 
 @app.route('/add_part', methods=['POST'])
 def add_part():
     try:
-        # data = request.get_json()
         job_id = request.form.get('job_id')
         part_id = request.form.get('part_id')
         qty = request.form.get('qty')
@@ -152,7 +151,7 @@ def mark_completed():
         # Update the total cost in the job table
         cur.execute("UPDATE job SET total_cost = %s, completed=1 WHERE job_id = %s", (total_cost, job_id))
         mysql.connection.commit()
-        return redirect('/')
+        return redirect(url_for('home', success_modal=True))
     
     except Exception as e:
         # Log the error and return an error response
@@ -163,7 +162,26 @@ def mark_completed():
 #admin page
 @app.route('/admin')
 def admin_home():
-    return render_template('admin/admin_index.html')
+    today = datetime.date.today().strftime('%Y-%m-%d')
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT count(*)
+        FROM customer """)
+    columns = [column[0] for column in cur.description]
+    user_count = [dict(zip(columns, row)) for row in cur.fetchall()]
+    cur.execute("""SELECT count(*)
+        FROM job where job_date=%s""" ,(today,))
+    columns = [column[0] for column in cur.description]
+    job_count = [dict(zip(columns, row)) for row in cur.fetchall()]
+    cur.execute("""SELECT count(*)
+        FROM job where completed = 0 """)
+    columns = [column[0] for column in cur.description]
+    incomplete_job = [dict(zip(columns, row)) for row in cur.fetchall()]
+    cur.execute("""SELECT count(*)
+        FROM job where completed = 1 and job_date=%s""" ,(today,))
+    columns = [column[0] for column in cur.description]
+    complete_job = [dict(zip(columns, row)) for row in cur.fetchall()]
+    cur.close()
+    return render_template('admin/admin_index.html',user_count=user_count,job_count=job_count, incomplete_job=incomplete_job, complete_job=complete_job)
 
 @app.route('/admin/customer_list')
 def admin_customer_list():
@@ -355,27 +373,27 @@ def admin_bills():
         print('GET Method')
         customer_id = request.args.get('customer')
         cur.execute(""" 
-            SELECT job.job_id, job.job_date, customer.first_name, job.total_cost,customer_id
+            SELECT job.job_id, job.job_date, customer.first_name, customer.family_name, job.total_cost,customer_id
             FROM job
             JOIN customer ON job.customer = customer.customer_id
-            WHERE job.paid = 0 and customer.customer_id=%s; """, (customer_id))
+            WHERE job.paid = 0 and job.completed=1 and customer.customer_id=%s; """, (customer_id,))
         print(customer_id)
         
     else:
         print('Post Method')
         cur.execute("""
-        SELECT job.job_id, job.job_date, customer.first_name, job.total_cost,customer_id
+        SELECT job.job_id, job.job_date, customer.first_name, customer.family_name, job.total_cost,customer_id
         FROM job
         JOIN customer ON job.customer = customer.customer_id
-        WHERE job.paid = 0;
+        WHERE job.paid = 0 and job.completed=1;
         """)
     columns = [column[0] for column in cur.description]
     customer_list = [dict(zip(columns, row)) for row in cur.fetchall()]
     cur.execute("""
-        SELECT customer.first_name, customer_id
+        SELECT customer.first_name,customer.family_name, customer_id
         FROM job
         JOIN customer ON job.customer = customer.customer_id
-        WHERE job.paid = 0;
+        WHERE job.paid = 0 and job.completed=1;
         """)
     columns = [column[0] for column in cur.description]
     customer_name = [dict(zip(columns, row)) for row in cur.fetchall()]

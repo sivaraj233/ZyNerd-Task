@@ -1,14 +1,17 @@
 {% extends "admin/admin_index.html" %} 
 {% block content %}
+
 <div class="content-wrapper" >
   <div class="container mt-5">
-    <h1>Unpaid Bills Report</h1>
+    <h1>Over Due Bills</h1>
 
     {% for customer_id, customer_bills in grouped_results.items() %}
-        <h2>{{ customer_bills[0].family_name }}, {{ customer_bills[0].first_name }}</h2>
+        <h2>
+            {% if  customer_bills[0].family_name == None %}   -   {% else %} {{ customer_bills[0].family_name}} {% endif %} , {% if  customer_bills[0].first_name == None %}   -   {% else %} {{customer_bills[0].first_name}} {% endif %}
+        </h2>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table m-0" id="customerTable">
+                <table class="table" id="customerTable">
                     <thead>
                         <tr>
                             <th>Date of Job</th>
@@ -18,7 +21,7 @@
                     </thead>
                     <tbody>
                         {% for bill in customer_bills %}
-                            <tr {% if bill.days_since_job > 14 %}class="unpaid"{% endif %}>
+                            <tr {% if bill.days_since_job > 4 %}class="alert-danger"{% endif %}>
                                 <td>{{ bill.job_date }}</td>
                                 <td>{{ bill.total_cost }}</td>
                                 <td>{{ bill.days_since_job }}</td>

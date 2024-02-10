@@ -4,7 +4,7 @@
     <h1>Unpaid Bills</h1>
     <form method="get" action="/admin/bills">
       <div class="mb-3">
-        <label for="customerSelect" class="form-label">Select Customer:</label>
+        <label for="customerSelect" class="form-label">Customer List:</label>
         <select
           class="form-select"
           id="customerSelect"
@@ -12,17 +12,17 @@
           name="customer"
         >
           {% for item in customer_name %}
-          <option value="{{item.customer_id}}">{{item.first_name}}</option>
+          <option value="{{item.customer_id}}"> {% if  item['first_name'] == None %}   -   {% else %} {{ item.first_name}} {% endif %} , {% if  item['family_name'] == None %}   -   {% else %} {{item.family_name}} {% endif %} </option>
           {% endfor %}
           <!-- Populate this dropdown with customer options -->
           <!-- Add more options as needed -->
         </select>
       </div>
-      <button type="submit" class="btn btn-primary">Book Job</button>
+      <button type="submit" class="btn btn-primary">Select Customer</button>
     </form>
     <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table m-0" id="customerTable">
+        <table class="table table-striped" id="customerTable">
           <thead>
             <tr>
               <th>Date</th>
@@ -37,7 +37,7 @@
               <input type="text" value={{ bill.job_id}} name="job_id" style="display: none;" />
               <tr>
                 <td>{{ bill.job_date }}</td>
-                <td>{{ bill.first_name }}</td>
+                <td>{% if bill['first_name'] == None %}   -   {% else %} {{bill.first_name}} {% endif %} , {% if bill['family_name'] == None %}   -   {% else %} {{bill.family_name}} {% endif %}</td>
                 <td>{{ bill.total_cost }}</td>
                 <td>
                   <button
