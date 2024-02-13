@@ -41,7 +41,7 @@
                 <label>Email Address</label>
                 <input
                   required
-                  type="text"
+                  type="email"
                   name="email"
                   class="form-control"
                   placeholder="Enter Email"
@@ -52,7 +52,7 @@
               <div class="form-group">
                 <label>Phone Number</label>
                 <input
-                  type="text"
+                  type="number"
                   class="form-control"
                   name="phone"
                   placeholder="Enter Phone Number"
@@ -77,76 +77,37 @@
     </div>
   </section>
 </div>
-<!-- <script>
-  function addCustomer() {
-    // Get values from the form
-    var first_name = $("#first_name").val();
-    var family_name = $("#family_name").val();
-    var email = $("#email").val();
-    var phone = $("#phone").val();
-
-    // Create an object with the data
-    var data = {
-      first_name: first_name,
-      family_name: family_name,
-      email: email,
-      phone: phone,
-    };
-    console.log(data)
-    // Send an AJAX request to your Flask route
-    jQuery.ajax({
-      type: "POST",
-      url: "/add_customer", // Update with your actual route
-      contentType: "application/json;charset=UTF-8",
-      data: JSON.stringify(data),
-      success: function (response) {
-        var modal = $("#successModal");
-        modal.find("#successModalLabel").text(response.data);
-         
-        var  msg = response.isExist ? data.email + ' Already Exist': data.email+ ' Customer Addedd';
-        modal.find("#modalDetails").text(msg);
-        modal.modal("show");
-        modal.on("hidden.bs.modal", function () {
-          location.reload();
-        });
-      },
-      error: function (error) {
-        console.error(error);
-      },
-    });
-  }
+<script>
+  $(document).ready(function() {
+    var successModalValue = "{{ success_modal }}";
+    var successModalLabel = "{{ successModalLabel }}";
+    var successModalSubLabel = "{{ successModalSubLabel }}";
+    if (successModalValue === "True") {
+      console.log('Showing modal');
+      var modal = $("#successModal");
+      modal.find("#successModalLabel").text(successModalLabel);
+      modal.find("#successModalSubLabel").text(successModalSubLabel);
+      modal.modal("show");
+    }
+  });
 </script>
-<div
-  class="modal fade"
-  id="successModal"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="successModalLabel"
-  aria-hidden="true"
->
+<!-- Modal for Success Message -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-    <div class="modal-content">
+    <div class="modal-content bg-success">
       <div class="modal-header">
         <h5 class="modal-title" id="successModalLabel"></h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <h3 id="modalMessage"></h3>
-        <p id="modalDetails"></p>
+        <h3 class="modal-title" id="successModalSubLabel"></h3>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-          Close
-        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
-</div> -->
+</div>
 {% endblock %}

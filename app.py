@@ -3,12 +3,15 @@ from flask import Flask, jsonify, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
 from itertools import groupby
 from operator import itemgetter  # Import itemgetter
-
+from connect import dbuser, dbhost, dbname, dbpass, dbport
+ 
 
 app = Flask(__name__)
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "Null@123"
-app.config["MYSQL_DB"] = "spb"
+app.config["MYSQL_USER"] = dbuser
+app.config["MYSQL_PASSWORD"] = dbpass
+app.config["MYSQL_DB"] = dbname
+app.config["MYSQL_HOST"] = dbhost
+app.config["MYSQL_"] = dbport
 
 mysql = MySQL(app)
 @app.route("/")
@@ -244,6 +247,7 @@ def admin_add_customer():
 @app.route('/add_customer', methods=['POST'])
 def add_customer():
     try:
+        success_modal = request.args.get('success_modal', False)
         first_name = request.form.get('first_name')
         family_name = request.form.get('family_name')
         email = request.form.get('email')
@@ -253,15 +257,19 @@ def add_customer():
         existing_record = cur.fetchone()
 
         if existing_record:
-            return jsonify({"data": "Already Exist", "isExist": True})
+            successModalLabel = "Already Exist"
+            successModalSubLabel = "User Already Exist"
+            return render_template('admin/add_customer.html', success_modal=True, successModalLabel =successModalLabel, successModalSubLabel=successModalSubLabel)
         else:
             # Insert a new record
             cur.execute("INSERT INTO customer (first_name, family_name, email, phone) VALUES (%s, %s, %s, %s)", (first_name, family_name, email, phonenumber))
-
+            success_modal =True
+            successModalLabel = "Customer Created"
+            successModalSubLabel = "Customer created Sucessfully"
         cur.connection.commit() 
 
         # Return a JSON response
-        return render_template('admin/add_customer.html')
+        return render_template('admin/add_customer.html', success_modal=success_modal,successModalLabel =successModalLabel, successModalSubLabel=successModalSubLabel)
 
     except Exception as e:
         # Handle exceptions
@@ -274,6 +282,7 @@ def admin_add_part():
 @app.route('/add_master_part', methods=['POST'])
 def add_master_part():
     try:
+        success_modal = request.args.get('success_modal', False)
         part_name =request.form.get('part_name')
         cost = request.form.get('cost')
         cur = mysql.connection.cursor()
@@ -281,15 +290,19 @@ def add_master_part():
         existing_record = cur.fetchone()
 
         if existing_record:
-            return jsonify({"data": "Already Exist", "isExist": True})
+            successModalLabel = "Already Exist"
+            successModalSubLabel = "Part Already Exist"
+            return render_template('admin/add_part.html', success_modal=True, successModalLabel =successModalLabel, successModalSubLabel=successModalSubLabel)
         else:
             # Insert a new record
             cur.execute("INSERT INTO part (part_name, cost) VALUES (%s, %s)", (part_name, cost))
-
+            success_modal = True
+            successModalLabel = "Part Created"
+            successModalSubLabel = "Part created Sucessfully"
         cur.connection.commit() 
 
         # Return a JSON response
-        return render_template('admin/add_part.html')
+        return render_template('admin/add_part.html', success_modal=success_modal, successModalLabel =successModalLabel, successModalSubLabel=successModalSubLabel)
 
     except Exception as e:
         # Handle exceptions
@@ -304,6 +317,7 @@ def admin_add_service():
 @app.route('/add_master_service', methods=['POST'])
 def add_master_service():
     try:
+        success_modal = request.args.get('success_modal', False)
         service_name =request.form.get('service_name')
         cost = request.form.get('cost')
         cur = mysql.connection.cursor()
@@ -311,15 +325,19 @@ def add_master_service():
         existing_record = cur.fetchone()
 
         if existing_record:
-            return jsonify({"data": "Already Exist", "isExist": True})
+            successModalLabel = "Already Exist"
+            successModalSubLabel = "Service Already Exist"
+            return render_template('admin/add_service.html', success_modal=True, successModalLabel =successModalLabel, successModalSubLabel=successModalSubLabel)
         else:
             # Insert a new record
             cur.execute("INSERT INTO service (service_name, cost) VALUES (%s, %s)", (service_name, cost))
-
+            success_modal =True
+            successModalLabel = "Service Created"
+            successModalSubLabel = "Service created Sucessfully"
         cur.connection.commit() 
 
         # Return a JSON response
-        return render_template('admin/add_service.html')
+        return render_template('admin/add_service.html', success_modal=success_modal, successModalLabel =successModalLabel, successModalSubLabel=successModalSubLabel)
 
     except Exception as e:
         # Handle exceptions
@@ -368,6 +386,7 @@ def book_job():
 
 @app.route('/admin/bills', methods=['POST', 'GET'])
 def admin_bills():
+    success_modal = request.args.get('success_modal', False)
     cur = mysql.connection.cursor()
     if request.method == 'GET' and request.args.get('customer') is not None :
         print('GET Method')
@@ -398,7 +417,7 @@ def admin_bills():
     columns = [column[0] for column in cur.description]
     customer_name = [dict(zip(columns, row)) for row in cur.fetchall()]
     cur.close()
-    return render_template('admin/bills.html',customer_details=customer_list, customer_name=customer_name)
+    return render_template('admin/bills.html',customer_details=customer_list, customer_name=customer_name,success_modal=success_modal)
 
 @app.route('/paid', methods=['POST'])
 def mark_paid():
@@ -409,7 +428,7 @@ def mark_paid():
         # Update the total cost in the job table
         cur.execute("UPDATE job SET paid=1 WHERE job_id = %s", (job_id,))
         mysql.connection.commit()
-        return jsonify({"message": "Service added successfully"})
+        return redirect(url_for('admin_bills', success_modal=True))
     
     except Exception as e:
         # Log the error and return an error response
@@ -462,7 +481,7 @@ def unpaid_bills_report():
             JOIN
                 job ON customer.customer_id = job.customer
             WHERE
-                job.paid = 0
+                job.paid = 0 and completed = 1
             ORDER BY
                 customer.family_name,
                 customer.first_name,

@@ -12,7 +12,7 @@
           name="customer"
         >
           {% for item in customer_name %}
-          <option value="{{item.customer_id}}"> {% if  item['first_name'] == None %}   -   {% else %} {{ item.first_name}} {% endif %} , {% if  item['family_name'] == None %}   -   {% else %} {{item.family_name}} {% endif %} </option>
+          <option value="{{item.customer_id}}"> {% if  item['family_name'] == None %}   -   {% else %} {{item.family_name}} {% endif %} , {% if  item['first_name'] == None %}   -   {% else %} {{ item.first_name}} {% endif %}  </option>
           {% endfor %}
           <!-- Populate this dropdown with customer options -->
           <!-- Add more options as needed -->
@@ -37,7 +37,7 @@
               <input type="text" value={{ bill.job_id}} name="job_id" style="display: none;" />
               <tr>
                 <td>{{ bill.job_date }}</td>
-                <td>{% if bill['first_name'] == None %}   -   {% else %} {{bill.first_name}} {% endif %} , {% if bill['family_name'] == None %}   -   {% else %} {{bill.family_name}} {% endif %}</td>
+                <td> {% if bill['family_name'] == None %}   -   {% else %} {{bill.family_name}} {% endif %}, {% if bill['first_name'] == None %}   -   {% else %} {{bill.first_name}} {% endif %}</td>
                 <td>{{ bill.total_cost }}</td>
                 <td>
                   <button
@@ -57,100 +57,32 @@
   </div>
 </div>
 
-<!-- <script>
-    function paidBill(id) {
-        // Get values from the form
-        var job_id = id;
-        // Create an object with the data
-        var data = {
-            job_id: job_id,
-        };
-        console.log(data);
-        // Send an AJAX request to your Flask route
-        jQuery.ajax({
-            type: "POST",
-            url: "/paid", // Update with your actual route
-            contentType: "application/json;charset=UTF-8",
-            data: JSON.stringify(data),
-            success: function (response) {
-                var modal = $("#successModal");
-                modal.find("#modalMessage").text("Paid Successfully");
-                modal.modal("show");
-                modal.on("hidden.bs.modal", function () {
-                     location.reload();
-                });
-            },
-            error: function (error) {
-                console.error(error);
-            },
-        });
+<script>
+  $(document).ready(function() {
+    var successModalValue = "{{ success_modal }}";
+    if (successModalValue === "True") {
+      console.log('Showing modal');
+      $('#successModal').modal('show');
     }
-
-    function searchCustomer() {
-    var searchItem = $("#customerSelect").val();
-    var data = {
-      searchItem: searchItem,
-    };
-    console.log(data)
-    // Send an AJAX request to your Flask route
-    jQuery.ajax({
-      type: "POST",
-      url: "/search_customer", // Update with your actual route
-      contentType: "application/json;charset=UTF-8",
-      data: JSON.stringify(data),
-      success: function (response) {
-        $("#customerTable tbody").empty();
-        // Update table with new data
-        for (var i = 0; i < response.data.length; i++) {
-          var item = response.data[i];
-          var newRow =
-            "<tr>" +
-            "<td>" +
-            (i + 1) +
-            "</td>" +
-            "<td>" +
-            item.first_name +
-            "</td>" +
-            "<td>" +
-            item.total_cost +
-            "</td>" +
-            "<td>" +
-            "<button type='button' class='btn btn-primary' onclick='paidBill(" + item.job_id + ")'>" +
-            "Mark as Paid" +
-            "</button>" +
-            "</td>" +
-            "</tr>";
-
-          // Append the new row to the table
-          $("#customerTable tbody").append(newRow);
-        }
-      },
-      error: function (error) {
-        console.error(error);
-      },
-    });
-  }
+  });
 </script>
-<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <h3 id="modalMessage"></h3>
-                <p id="modalDetails"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    Close
-                </button>
-            </div>
-        </div>
+<!-- Modal for Success Message -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content bg-success">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Mark AS Paid </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3 class="modal-title" id="successModalSubLabel"> Job paid succesfully</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
     </div>
-</div> -->
+  </div>
+</div>
 {% endblock %}

@@ -13,8 +13,7 @@
                   <thead>
                     <tr>
                       <th>S.NO</th>
-                      <th>First Name</th>
-                      <th>Family Name</th>
+                      <th>Customer Name</th>
                       <th>Email</th>
                       <th>Phone</th>
                     </tr>
@@ -23,8 +22,7 @@
                     {% for item in customer_details %}
                     <tr>
                       <td>{{ loop.index }}</td>
-                      <td>{% if item['first_name'] == None %}   -   {% else %} {{item.first_name}} {% endif %}    </td>
-                      <td>{% if item['family_name'] == None %}   -   {% else %} {{item.family_name}} {% endif %}</td>
+                      <td>{% if item['family_name'] == None %}   -   {% else %} {{item.family_name}} {% endif %} ,{% if item['first_name'] == None %}   -   {% else %} {{item.first_name}} {% endif %}    </td>
                       <td>{{item.email}}</td>
                       <td>{{item.phone}}</td>
                     </tr>
