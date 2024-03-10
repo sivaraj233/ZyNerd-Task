@@ -1,0 +1,152 @@
+<div class="wrapper">
+  {% extends "base.html" %} {% include "topbar.html" %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    {% set menu_list = menu_list %} {% include "sidebar.html" %}
+  </main>
+  {% block content %}
+  <!-- Main content -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Projects</h3>
+
+          <div class="card-tools">
+            <button
+              type="button"
+              class="btn btn-tool"
+              data-card-widget="collapse"
+              title="Collapse"
+            >
+              <i class="fas fa-minus"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-tool"
+              data-card-widget="remove"
+              title="Remove"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped projects">
+            <thead>
+              <tr>
+                <th style="width: 1%">#</th>
+                <th style="width: 20%">Science Name</th>
+                <th style="width: 30%">Images</th>
+                <th>Item Type</th>
+                <th style="width: 8%" class="text-center">Status</th>
+                <th style="width: 20%"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in pest_details%}
+              <tr>
+                <td>#</td>
+                <td>
+                  <a> {{ item.science_name}} </a>
+                  <br />
+                  <small> {{ item.common_name}} </small>
+                </td>
+                <td>
+                  <ul class="list-inline">
+                    <li class="list-inline-item">
+                      <img
+                        alt="Avatar"
+                        class="table-avatar"
+                        src="data:image/png;base64,{{ item.img_url.decode('utf-8').lstrip('b') }}"
+                      />
+                    </li>
+                  </ul>
+                </td>
+                <td class="project_progress">
+                  {{ 'Pest' if item.agriculture_type == 1 else 'Weed' }}
+                </td>
+                <td class="project-state">
+                  <span
+                    class="badge {{ 'badge-success' if item.is_active == 1 else 'badge-danger' }}"
+                  >
+                    {{ 'Active' if item.is_active == 1 else 'In Active' }}
+                  </span>
+                </td>
+                <td class="project-actions text-right">
+                  <a class="btn btn-primary btn-sm" href="#">
+                    <i class="fas fa-folder"> </i>
+                    View
+                  </a>
+                  <a class="btn btn-info btn-sm" href="{{ url_for('edit_item', id=item.agriculture_id) }}">
+                    <i class="fas fa-pencil-alt"> </i>
+                    Edit
+                  </a>
+                  <a
+                    class="btn btn-danger btn-sm"
+                    data-toggle="modal"
+                    data-target="#deleteConfirmationModal"
+                    data-item-id="{{ item.agriculture_id }}"
+                  >
+                    <i class="fas fa-trash"> </i>
+                    Delete
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <div
+    class="modal fade"
+    id="deleteConfirmationModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="deleteConfirmationModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteConfirmationModalLabel">
+            Confirmation
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">Are you sure you want to delete this item?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+          <a id="deleteItemLink" class="btn btn-danger" href="#">Delete</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Attach event listener to the modal's "Delete" button
+    $("#deleteConfirmationModal").on("show.bs.modal", function (event) {
+      var button = $(event.relatedTarget); 
+      var itemId = button.data("item-id"); 
+      var deleteItemLink = $("#deleteItemLink");
+
+      deleteItemLink.attr("href", "/delete_item/" + itemId);
+    });
+  </script>
+  {% endblock %}
+</div>

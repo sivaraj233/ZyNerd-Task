@@ -1,0 +1,5 @@
+dbuser="root"
+dbhost="localhost"
+dbname="agriculture"
+dbpass="Null@123"
+dbport= ""

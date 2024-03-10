@@ -1,0 +1,54 @@
+<div class="wrapper">
+  {% extends "base.html" %} {% include "topbar.html" %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    {% set menu_list = menu_list %} {% include "sidebar.html" %}
+  </main>
+  {% block content %}
+  <!-- Main content -->
+  <div class="content-wrapper">
+    <div class="card card-solid">
+      <div class="card-body pb-0">
+        <div class="row">
+          {% for item in weed_details %}
+          <div
+            class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column"
+          >
+            <div class="card bg-light d-flex flex-fill">
+              <div class="card-header text-muted border-bottom-0">
+                {{item.common_name}}
+              </div>
+              <div class="card-body pt-0">
+                <div class="row">
+                  <div class="col-7">
+                    <h2 class="lead"><b>{{ item.science_name}}</b></h2>
+                    <p class="text-muted text-sm">
+                      <b>Scientific name:  </b> {{ item.science_name}}
+                    </p>
+                  </div>
+                  <div class="col-5 text-center">
+                    {% if item.is_primary == 1 %}
+                    <img
+                      src="data:image/png;base64,{{ item.img_url.decode('utf-8').lstrip('b') }}"
+                      alt="user-avatar"
+                      class="img-circle img-fluid"
+                    />
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                  <a href="{{ url_for('weed_list', id=item.agriculture_id) }}" class="btn btn-sm btn-primary">
+                    View
+                  </a>
+                </div>
+              </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+</div>

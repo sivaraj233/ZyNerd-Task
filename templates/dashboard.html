@@ -1,0 +1,10 @@
+<div class="wrapper">
+    {% extends "base.html" %}
+    {% include "topbar.html" %}
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      {% set menu_list = menu_list %}
+      {% include "sidebar.html" %}
+    </main>
+{% block content %}
+{% endblock %}
+</div>

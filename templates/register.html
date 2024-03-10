@@ -1,0 +1,250 @@
+{% include "base.html" %}
+
+<div class="hold-transition register-page">
+  <div class="register-box">
+    <div class="card card-outline card-primary">
+      <div class="card-header text-center">
+        <a herf="" class="h1"><b>Bio</b>Security</a>
+      </div>
+      <div class="card-body">
+        <p class="login-box-msg">Register a new Agronomist</p>
+
+        <form action="/agronosmist_signup" method="post">
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              required
+              class="form-control"
+              placeholder="First name"
+              name="first_name"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              required
+              class="form-control"
+              placeholder="Last name"
+              name="last_name"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="tel"
+              required
+              class="form-control"
+              placeholder="Phone number"
+              name="phone_number"
+              
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-phone"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <textarea
+              required
+              class="form-control"
+              placeholder="Address"
+              name="address"
+            ></textarea>
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="email"
+              required
+              class="form-control"
+              placeholder="Email"
+              name="username"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              name="password"
+              id="password"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+            
+          </div>
+          <div class="input-group mb-3">
+            <p id="password-pattern">Password should contain at least:
+              <br><i class="fa fa-times" aria-hidden="true" id="symbol"></i> One symbol (e.g., !, @, #)
+              <br><i class="fa fa-times" aria-hidden="true" id="uppercase"></i> One uppercase letter
+              <br><i class="fa fa-times" aria-hidden="true" id="lowercase"></i> One lowercase letter
+              <br><i class="fa fa-times" aria-hidden="true" id="numnercase"></i> One number
+              <br><i class="fa fa-times" aria-hidden="true" id="minchar"></i> Minimum length of 8 characters
+          </p>
+          </div>
+
+          <div class="input-group mb-3">
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Retype password"
+              name="retype-password"
+              id="retypePassword"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+          <div id="passwordMatchMessage"></div>
+          <div class="row">
+            <div class="col-8">
+              <div class="icheck-primary">
+                <input
+                  type="checkbox"
+                  id="agreeTerms"
+                  name="terms"
+                  value="agree"
+                />
+                <label for="agreeTerms">
+                  I agree to the <a href="#">terms</a>
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-4">
+              <button
+                type="submit"
+                class="btn btn-primary btn-block"
+                id="registerButton"
+                disabled
+              >
+                Register
+              </button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+
+        <div class="social-auth-links text-center">
+          <a href="{{ url_for('login') }}" class="btn btn-block btn-secondary">
+            <i class="fab fa-facebook mr-2"></i>
+            I already have a membership
+          </a>
+        </div>
+      </div>
+      <!-- /.form-box -->
+    </div>
+    <!-- /.card -->
+  </div>
+</div>
+
+<script>
+  document.getElementById("agreeTerms").addEventListener("change", function () {
+    var registerButton = document.getElementById("registerButton");
+    registerButton.disabled = !this.checked;
+  });
+  document
+    .getElementById("password")
+    .addEventListener("input", function () {
+      var password = document.getElementById("password").value;
+      var hasUpperCase = /[A-Z]/.test(password);
+      var hasLowerCase = /[a-z]/.test(password);
+      var hasSymbol = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password);
+      var hasNumber = /\d/.test(password);
+      var isLengthValid = password.length >= 8;
+      document.getElementById('symbol').className = hasSymbol ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('uppercase').className = hasUpperCase ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('lowercase').className = hasLowerCase ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('numnercase').className = hasNumber ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('minchar').className = isLengthValid ? 'fa fa-check' : 'fa fa-times';
+    })
+  document
+    .getElementById("retypePassword")
+    .addEventListener("input", function () {
+      var password = document.getElementById("password").value;
+      var hasUpperCase = /[A-Z]/.test(password);
+      var hasLowerCase = /[a-z]/.test(password);
+      var hasSymbol = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password);
+      var hasNumber = /\d/.test(password);
+      var isLengthValid = password.length >= 8;
+
+      var retypePassword = this.value;
+      var messageElement = document.getElementById("passwordMatchMessage");
+      if (
+        !(
+          hasUpperCase &&
+          hasLowerCase &&
+          hasSymbol &&
+          hasNumber &&
+          isLengthValid
+        )
+      ) {
+        messageElement.textContent =
+          "* Password doesn't match requirement";
+        messageElement.style.color = "red";
+      } else {
+        var retypePassword = this.value;
+        var messageElement = document.getElementById("passwordMatchMessage");
+
+        if (password != retypePassword) {
+          messageElement.textContent = "Passwords do not match";
+          messageElement.style.color = "red";
+        } else {
+          messageElement.textContent = "";
+        }
+      }
+    });
+
+    $(document).ready(function() {
+    var successModalValue = "{{ success_modal }}";
+    var successModalLabel = "{{ successModalLabel }}";
+    var successModalSubLabel = "{{ successModalSubLabel }}";
+    if (successModalValue === "True") {
+      console.log('Showing modal');
+      var modal = $("#successModal");
+      modal.find("#successModalLabel").text(successModalLabel);
+      modal.find("#successModalSubLabel").text(successModalSubLabel);
+      modal.modal("show");
+    }
+  });
+</script>
+
+
+<!-- Modal for Success Message -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content bg-success">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3 class="modal-title" id="successModalSubLabel"></h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

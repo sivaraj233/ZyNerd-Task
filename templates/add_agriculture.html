@@ -1,0 +1,251 @@
+<div class="wrapper">
+  {% extends "base.html" %} {% include "topbar.html" %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    {% set menu_list = menu_list %} {% include "sidebar.html" %}
+  </main>
+  {% block content %}
+  <div class="content-wrapper">
+    <div class="card">
+      <!-- /.card-header -->
+      <div class="card-body">
+        <!-- Main content -->
+        <form id="agricultureForm" action="/add_item" method="post" enctype="multipart/form-data">
+          <section class="content">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Agriculture Item Add</h3>
+
+                    <div class="card-tools">
+                      <button
+                        type="button"
+                        class="btn btn-tool"
+                        data-card-widget="collapse"
+                        title="Collapse"
+                      >
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label for="item_type">Item Type</label>
+                      <select
+                        id="item_type"
+                        class="form-control custom-select"
+                        name="arg_item"
+                      >
+                        <option selected disabled>Select one</option>
+                        <option value="1">Pest</option>
+                        <option value="2">Weed</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputName">Common Name</label>
+                      <input
+                        type="text"
+                        id="common_name"
+                        name="common_name"
+                        class="form-control"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="inputName">Science Name</label>
+                      <input
+                        type="text"
+                        id="science_name"
+                        name="science_name"
+                        class="form-control"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="inputDescription">Key Charaterstics</label>
+                      <textarea
+                        id="key_char"
+                        name="key_char"
+                        class="form-control"
+                        rows="4"
+                      ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="inputClientCompany">Biology</label>
+                      <textarea
+                        id="biology"
+                        name="biology"
+                        class="form-control"
+                        rows="4"
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputProjectLeader">impacts</label>
+                      <textarea
+                        id="impacts"
+                        name="impacts"
+                        class="form-control"
+                        rows="4"
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="controls">Controls</label>
+                      <textarea
+                        id="controls"
+                        name="controls"
+                        class="form-control"
+                        rows="4"
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="controls">Information</label>
+                      <textarea
+                        id="information"
+                        name="information"
+                        class="form-control"
+                        rows="4"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+              <div class="col-md-6">
+                <div class="card card-secondary">
+                  <div class="card-header">
+                    <h3 class="card-title">Images</h3>
+                    <div class="form-group">
+                      <label for="exampleInputFile">File input</label>
+                      <div class="input-group">
+                        <div class="custom-file">
+                          <input
+                            type="file"
+                            class="custom-file-input"
+                            id="imageInput"
+                            accept="image/*"
+                            multiple
+                            name="files"
+                          />
+                          <label
+                            class="custom-file-label"
+                            for="exampleInputFile"
+                            >Choose file</label
+                          >
+                        </div>
+                        <div class="input-group-append">
+                          <span class="input-group-text">Upload</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-tools">
+                      <button
+                        type="button"
+                        class="btn btn-tool"
+                        data-card-widget="collapse"
+                        title="Collapse"
+                      ></button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="timeline-item">
+                      <h3 class="timeline-header">Preview</h3>
+                      <div
+                        class="timeline-body"
+                        id="imagePreviewContainer"
+                      ></div>
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <a href="#" class="btn btn-secondary">Cancel</a>
+                <input
+                  type="submit"
+                  value="Submit"
+                  class="btn btn-success float-right"
+                />
+              </div>
+            </div>
+          </section>
+          <!-- /.content -->
+        </form>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("imageInput")
+        .addEventListener("change", function () {
+          displayImagePreviews(this);
+        });
+      function displayImagePreviews(input) {
+        var container = document.getElementById("imagePreviewContainer");
+        container.innerHTML = "";
+        for (var i = 0; i < input.files.length; i++) {
+          var file = input.files[i];
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+            var preview = document.createElement("img");
+            preview.src = e.target.result;
+            preview.style.maxWidth = "300px";
+            preview.style.maxHeight = "300px";
+            container.appendChild(preview);
+          };
+
+          reader.readAsDataURL(file);
+        }
+      }
+
+      $(document).ready(function () {
+        var successModalValue = "{{ success_modal }}";
+        var successModalLabel = "{{ successModalLabel }}";
+        var successModalSubLabel = "{{ successModalSubLabel }}";
+        if (successModalValue === "True") {
+          console.log("Showing modal");
+          var modal = $("#successModal");
+          modal.find("#successModalLabel").text(successModalLabel);
+          modal.find("#successModalSubLabel").text(successModalSubLabel);
+          modal.modal("show");
+        }
+      });
+    </script>
+  </div>
+  <div
+    class="modal fade"
+    id="successModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="successModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel"></h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h3 id="modalMessage"></h3>
+          <p id="modalDetails"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+</div>

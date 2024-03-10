@@ -1,0 +1,156 @@
+<div class="wrapper">
+    {% extends "base.html" %} {% include "topbar.html" %}
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      {% set menu_list = menu_list %}
+      {% include "sidebar.html" %}
+    </main>
+    {% block content %}
+<div class="hold-transition register-page">
+    <div class="register-box">
+        <div class="card card-outline card-primary">
+          <div class="card-header text-center">
+            <a href="../../index2.html" class="h1"><b>Staff</b> Details</a>
+          </div>
+          <div class="card-body">
+            <p class="login-box-msg">Register a new membership</p>
+      
+            <form id="registrationForm" >
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="First name" id="first_name">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-user"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Last name" id="last_name">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-user"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Phone number" id="phone_number"> 
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-user"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <input type="email" class="form-control" placeholder="Email" id="email">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-envelope"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <input type="password" class="form-control" placeholder="Password" id="password">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-lock"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <p id="password-pattern">Password should contain at least:
+                  <br><i class="fa fa-times" aria-hidden="true" id="symbol"></i> One symbol (e.g., !, @, #)
+                  <br><i class="fa fa-times" aria-hidden="true" id="uppercase"></i> One uppercase letter
+                  <br><i class="fa fa-times" aria-hidden="true" id="lowercase"></i> One lowercase letter
+                  <br><i class="fa fa-times" aria-hidden="true" id="numnercase"></i> One number
+                  <br><i class="fa fa-times" aria-hidden="true" id="minchar"></i> Minimum length of 8 characters
+              </p>
+              </div>
+              <div class="row">
+                <!-- /.col -->
+                <div class="col-4">
+                  <button type="submit" class="btn btn-primary btn-block">Register</button>
+                </div>
+                <!-- /.col -->
+              </div>
+            </form>
+      
+          </div>
+          <!-- /.form-box -->
+        </div><!-- /.card -->
+      </div>
+</div>
+<script>
+    document
+    .getElementById("password")
+    .addEventListener("input", function () {
+      var password = document.getElementById("password").value;
+      var hasUpperCase = /[A-Z]/.test(password);
+      var hasLowerCase = /[a-z]/.test(password);
+      var hasSymbol = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password);
+      var hasNumber = /\d/.test(password);
+      var isLengthValid = password.length >= 8;
+      document.getElementById('symbol').className = hasSymbol ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('uppercase').className = hasUpperCase ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('lowercase').className = hasLowerCase ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('numnercase').className = hasNumber ? 'fa fa-check' : 'fa fa-times';
+      document.getElementById('minchar').className = isLengthValid ? 'fa fa-check' : 'fa fa-times';
+    })
+  $(document).ready(function () {
+      $('#registrationForm').submit(function (e) {
+        e.preventDefault();
+        var formData = {
+              first_name: $('#first_name').val(),
+              last_name: $('#last_name').val(),
+              phone_number: $('#phone_number').val(),
+              username: $('#email').val(),
+              password: $('#password').val(),
+          }
+          $.ajax({
+              url: '/staff_add', // Update with your actual Flask route
+              type: 'POST',
+              dataType: 'json',
+              contentType: 'application/json',
+              data: JSON.stringify(formData),
+              success: function (response) {
+                  if (response.success) {
+                      alert('User created successfully!');
+                      $('#registrationForm')[0].reset();
+                  } else {
+                      alert('Failed to create user. ' + response.error);
+                  }
+              },
+              error: function (error) {
+                  console.error('Error:', error.responseText);
+                  alert('An error occurred. Check the console for details.');
+              }
+          });
+      });
+  });
+  document
+    .getElementById("password")
+    .addEventListener("input", function () {
+      var password = document.getElementById("password").value;
+      var hasUpperCase = /[A-Z]/.test(password);
+      var hasLowerCase = /[a-z]/.test(password);
+      var hasSymbol = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password);
+      var hasNumber = /\d/.test(password);
+      var isLengthValid = password.length >= 8;
+      var messageElement = document.getElementById("passwordMatchMessage");
+      if (
+        !(
+          hasUpperCase &&
+          hasLowerCase &&
+          hasSymbol &&
+          hasNumber &&
+          isLengthValid
+        )
+      ) {
+        messageElement.textContent =
+          "* Password doesn't match requirement";
+        messageElement.style.color = "red";
+      } else {
+          messageElement.textContent = "";
+        }
+    });
+</script>
+{% endblock %}
+</div>

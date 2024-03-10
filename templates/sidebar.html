@@ -1,0 +1,27 @@
+<aside class="main-sidebar sidebar-dark-primary elevation-4 mt-5" style="top:40px">
+    <!-- Brand Logo -->
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul
+          class="nav nav-pills nav-sidebar flex-column"
+          data-widget="treeview"
+          role="menu"
+          data-accordion="false"
+        >
+        {% for item in menu_list%}
+          <li class="nav-item">
+            <a href="{{url_for(item.menu_link)}}" class="nav-link">
+              <i class="nav-icon fa fa-th-list"></i>
+              <p>
+                {{item.menu_name}}
+              </p>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  
+    <!-- /.sidebar -->
+  </aside>
+  
